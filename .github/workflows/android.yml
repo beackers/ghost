@@ -20,6 +20,12 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Speak 'Friend' And Enter
+        run: |
+          ls -R
+          file gradle/wrapper/gradle-wrapper.jar
+          ./gradlew --version
+
       - name: Be Ye Disablin' Of Yon Shielde
         run: ./gradlew lint
 
