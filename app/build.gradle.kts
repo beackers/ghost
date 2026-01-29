@@ -1,6 +1,7 @@
-plugins {
-    autowire(libs.plugins.android.application)
-    autowire(libs.plugins.kotlin.android)
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
 }
 
 android {
@@ -39,15 +40,3 @@ android {
     }
 }
 
-dependencies {
-    implementation(com.highcapable.betterandroid.ui.component)
-    implementation(com.highcapable.betterandroid.ui.extension)
-    implementation(com.highcapable.betterandroid.system.extension)
-    implementation(androidx.core.core.ktx)
-    implementation(androidx.appcompat.appcompat)
-    implementation(com.google.android.material.material)
-    implementation(androidx.constraintlayout.constraintlayout)
-    testImplementation(junit.junit)
-    androidTestImplementation(androidx.test.ext.junit)
-    androidTestImplementation(androidx.test.espresso.espresso.core)
-}
