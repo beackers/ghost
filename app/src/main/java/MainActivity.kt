@@ -1,10 +1,9 @@
-package __PACKAGE_NAME__
+package com.beackers.ghostsms
 
 import android.os.Bundle
-import com.highcapable.betterandroid.ui.component.activity.AppBindingActivity
-import __PACKAGE_NAME__.databinding.ActivityMainBinding
+import android.app.Activity
 
-class MainActivity : AppBindingActivity<ActivityMainBinding>() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
