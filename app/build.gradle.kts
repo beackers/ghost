@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.beck.ghost"
+    namespace = "com.beackers.ghostsms"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.beck.ghost"
+        applicationId = "com.beackers.ghostsms"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
