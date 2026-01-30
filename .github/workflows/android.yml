@@ -4,11 +4,9 @@ on:
   push:
   pull_request:
 
-permissions:
-  contents: write
-
 jobs:
-  build apk:
+  build:
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -32,9 +30,6 @@ jobs:
       - name: Be Ye Disablin' Of Yon Shielde
         run: ./gradlew lint
 
-      - name: Testing (No Great Movie Quote)
-        run: ./gradlew test
-
       - name: The Password Is Password
         run: echo "$KEYSTORE_B64" | base64 --decode > keystore.jks
         env:
@@ -43,8 +38,8 @@ jobs:
       - name: Whole New World
         run: ./gradlew assembleDebug \
           -Pandroid.injected.signing.store.file=keystore.jks \
-          -Pandroid.injected.signing.store.password=${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
-          -Pandroid.injected.signing.key.alias=${{ secrets.DEBUG_KEY_ALIAS }}
+          -Pandroid.injected.signing.store.password=${{ secrets.DEBUG_KEYSTORE_PASSWORD }} \
+          -Pandroid.injected.signing.key.alias=${{ secrets.DEBUG_KEY_ALIAS }} \
           -Pandroid.injected.signing.key.password=${{ secrets.DEBUG_KEY_PASSWORD }}
 
       - name: Get At Them Beans
@@ -53,7 +48,8 @@ jobs:
           name: ghost-debug.apk
           path: app/build/outputs/apk/debug/app-debug.apk
 
-  unit tests:
+  unit_tests:
+    name: Test Code
     runs-on: ubuntu-latest
 
     steps:
