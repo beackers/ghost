@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import java.io.File
 import android.widget.Toast
+import android.content.pm.PackageManager
 
 class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +20,7 @@ class MainActivity : Activity() {
     )
 
     Toast.makeText(this,
-      "Has SMS perm = " + (checkSelfPermission(android.Manifest.permission.RECEIVE_SMS) == 0),
+      "Has SMS perm = " + (checkSelfPermission(android.Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED),
       Toast.LENGTH_LONG
     ).show()
 
