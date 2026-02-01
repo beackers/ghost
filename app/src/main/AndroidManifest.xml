@@ -12,7 +12,8 @@
         tools:targetApi="31">
 
       <receiver
-        android:name=".SmsSniffer">
+        android:name=".SmsSniffer"
+        androi:exported="true">
         <intent-filter>
           <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
         </intent-filter>
