@@ -38,7 +38,7 @@ android {
         viewBinding = true
     }
     lint {
-       abortOnError false
+       abortOnError = false
     }
 }
 
