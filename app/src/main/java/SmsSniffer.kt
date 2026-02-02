@@ -8,27 +8,9 @@ import android.widget.Toast
 
 class SmsSniffer : BroadcastReceiver() {
 
-  override fun onReceive(context: Context, intent: Intent) {
-    val bundle = intent.extras ?: return
-    val pdus = bundle.get("pdus") as? Array<*> ?: return
-    val format = bundle.getString("format")
-
-    for (pdu in pdus) {
-      val msg = if (format != null)
-          SmsMessage.createFromPdu(pdu as ByteArray, format)
-      else
-          SmsMessage.createFromPdu(pdu as ByteArray)
-
-      val from = msg.originatingAddress ?: "unknown"
-      val body = msg.messageBody ?: ""
-
-      Toast.makeText(context, "SMS from $from: $body", Toast.LENGTH_LONG).show()
-      logToFile(context, "FROM=$from BODY=$body")
-    }
-  }
-  fun logToFile(context: Context, text: String) {
-    val f = java.io.File(context.filesDir, "ghostsms.log")
-    f.appendText(text + "\n")
+  override fun onReceive(ctx: Context, intent: Intent) {
+    val logger = FileLogger(ctx)
+    logger.log("SMS received")
+    logger.log("From: $from Body: $body")
   }
 }
-

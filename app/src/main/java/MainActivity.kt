@@ -7,6 +7,8 @@ import androidx.core.app.ActivityCompat
 import java.io.File
 import android.widget.Toast
 import android.content.pm.PackageManager
+import android.content.Intent
+import android.os.Build
 
 class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +30,11 @@ class MainActivity : Activity() {
     if (f.exists()) {
       val text = f.readText()
       findViewById<TextView>(R.id.logView).text = text
+    }
+    if (Build.VERSION.SDK_INT >= 26) {
+      startForegroundService(Intent(this, WatchdogService::class.java))
+    } else {
+      startService(Intent(this, WatchdogService::class.java))
     }
   }
 }
