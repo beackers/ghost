@@ -38,13 +38,13 @@ class WatchdogService : Service() {
     private fun loop() {
         handler.postDelayed({
             val events = logger.pollEvents()
-            for (e in events) fileLogger.log("QUIK $e")
+            for (e in events) fileLogger.log("EVENT QUIK $e")
             loop()
         }, 20_000)
     }
 
     override fun onBind(intent: Intent?) = null
     override fun onDestroy() {
-      fileLogger.log("Watchdog killed")
+      fileLogger.log("EVENT GHOST: Watchdog killed")
     }
 }
