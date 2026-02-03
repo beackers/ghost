@@ -9,6 +9,7 @@ import android.widget.Toast
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Build
+import android.os.FileObserver
 
 import com.beackers.ghostsms.crashcar.CrashCarActivity
 
@@ -58,5 +59,13 @@ class MainActivity : Activity() {
       }
       Toast.makeText(this, "EXC: $e", Toast.LENGTH_LONG).show()
     }
+    val observer = object FileObserver(f.absolutePath, MODIFY) {
+      override fun onEvent(event: Int, path: String?) {
+        runOnUiThread {
+          findViewbyId<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
+        }
+      }
+    }
+    observer.startWatching()
   }
 }
