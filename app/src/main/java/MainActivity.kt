@@ -13,6 +13,9 @@ import android.os.FileObserver
 
 import com.beackers.ghostsms.crashcar.CrashCarActivity
 
+private lateinit var observer : FileObserver
+private lateinit var logView : TextView
+private lateinit var logFile : File
 
 class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +45,9 @@ class MainActivity : Activity() {
         Toast.LENGTH_LONG
       ).show()
 
-      val f = File(filesDir, "ghostsms.log")
-      if (f.exists()) {
-        val text = f.readText()
+      logFile = File(filesDir, "ghostsms.log")
+      if (logFile.exists()) {
+        val text = logFile.readText()
         findViewById<TextView>(R.id.logView).text = text
       }
       if (Build.VERSION.SDK_INT >= 26) {
@@ -59,7 +62,7 @@ class MainActivity : Activity() {
       }
       Toast.makeText(this, "EXC: $e", Toast.LENGTH_LONG).show()
     }
-    val observer = object FileObserver(f.absolutePath, MODIFY) {
+    observer = object : FileObserver(logFile.absolutePath, MODIFY) {
       override fun onEvent(event: Int, path: String?) {
         runOnUiThread {
           findViewbyId<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
