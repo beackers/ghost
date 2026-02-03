@@ -13,10 +13,14 @@ class WatchdogService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logger = QuikUsageLogger(this)
-        fileLogger = FileLogger(this)
-        startForeground()
-        loop()
+        try {
+          logger = QuikUsageLogger(this)
+          fileLogger = FileLogger(this)
+          startForeground()
+          loop()
+        } catch (e: Exception) {
+          FileLogger(this).log("EVENT GHOST: Watchdog Exception: $e")
+        }
     }
 
     private fun startForeground() {
@@ -38,7 +42,7 @@ class WatchdogService : Service() {
     private fun loop() {
         handler.postDelayed({
             val events = logger.pollEvents()
-            for (e in events) fileLogger.log("EVENT QUIK $e")
+            for (e in events) fileLogger.log("STATUS QUIK $e")
             loop()
         }, 20_000)
     }
