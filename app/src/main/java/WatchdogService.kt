@@ -13,10 +13,10 @@ class WatchdogService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        startForeground()
         try {
           logger = QuikUsageLogger(this)
           fileLogger = FileLogger(this)
-          startForeground()
           loop()
         } catch (e: Exception) {
           FileLogger(this).log("EVENT GHOST: Watchdog Exception: $e")
