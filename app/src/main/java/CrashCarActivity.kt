@@ -2,6 +2,9 @@ package com.beackers.ghostsms.crashcar
 
 import android.os.Bundle
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 
 import android.widget.TextView
 import android.widget.Toast
@@ -22,6 +25,15 @@ class CrashCarActivity : Activity() {
       "Crash log doesn't exist"
     }
 
-    findViewById<TextView>(R.id.crashText).text = text
+    val tv = findViewById<TextView>(R.id.crashText)
+    tv.text = text
+    tv.setOnLongClickListener {
+      val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      val clip = ClipData.newPlainText("crashlog", tv.text)
+      clipboard.setPrimaryClip(clip)
+
+      Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_LONG).show()
+      true
+    }
   }
 }
