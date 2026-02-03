@@ -10,6 +10,9 @@ import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Build
 
+import com.beackers.ghostsms.crashcar.CrashCarActivity
+
+
 class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Thread.setDefaultUncaughtExceptionHandler { thread, e ->
