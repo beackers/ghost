@@ -31,8 +31,6 @@ class QuikUsageLogger(private val ctx: Context) {
             UsageEvents.Event.ACTIVITY_RESUMED -> "resume"
             UsageEvents.Event.ACTIVITY_PAUSED -> "pause"
             UsageEvents.Event.ACTIVITY_STOPPED -> "stop"
-            UsageEvents.Event.ACTIVITY_DESTROYED -> "destroy"
-            UsageEvents.Event.ACTIVITY_STARTED -> "start"
             UsageEvents.Event.USER_INTERACTION -> "tap"
             UsageEvents.Event.CONFIGURATION_CHANGE -> "config"
             UsageEvents.Event.KEYGUARD_SHOWN -> "lock"
