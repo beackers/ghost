@@ -10,7 +10,6 @@ class WatchdogService : Service() {
     private lateinit var logger: QuikUsageLogger
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var fileLogger: FileLogger
-    private var usageAccessPrompted = false
 
     override fun onCreate() {
         super.onCreate()
@@ -42,20 +41,8 @@ class WatchdogService : Service() {
 
     private fun loop() {
         handler.postDelayed({
-            if (!logger.hasUsageAccess()) {
-                if (!usageAccessPrompted) {
-                    fileLogger.log("EVENT GHOST: Missing usage access. Prompting user to enable Usage Access for GhostSMS.")
-                    val intent = Intent(this, MainActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra(MainActivity.EXTRA_OPEN_USAGE_SETTINGS, true)
-                    startActivity(intent)
-                    usageAccessPrompted = true
-                }
-            } else {
-                usageAccessPrompted = false
-                val events = logger.pollEvents()
-                for (e in events) fileLogger.log("STATUS QUIK $e")
-            }
+            val events = logger.pollEvents()
+            for (e in events) fileLogger.log("STATUS QUIK $e")
             loop()
         }, 20_000)
     }
