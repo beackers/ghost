@@ -53,10 +53,12 @@ class MainActivity : Activity() {
         Toast.LENGTH_LONG
       ).show()
 
+      logView = findViewById<TextView>(R.id.logView)
       logFile = File(filesDir, "ghostsms.log")
+      logFile.createNewFile()
       if (logFile.exists()) {
         val text = logFile.readText()
-        findViewById<TextView>(R.id.logView).text = text
+        logView.text = text
       }
       if (Build.VERSION.SDK_INT >= 26) {
         startForegroundService(Intent(this, WatchdogService::class.java))
@@ -70,10 +72,14 @@ class MainActivity : Activity() {
       }
       Toast.makeText(this, "EXC: $e", Toast.LENGTH_LONG).show()
     }
-    observer = object : FileObserver(logFile.absolutePath, MODIFY) {
+    val watchDir = logFile.parentFile?.absolutePath ?: filesDir.absolutePath
+    val watchMask = FileObserver.CREATE or FileObserver.MODIFY or FileObserver.CLOSE_WRITE
+    observer = object : FileObserver(watchDir, watchMask) {
       override fun onEvent(event: Int, path: String?) {
-        runOnUiThread {
-          findViewById<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
+        if (path == logFile.name) {
+          runOnUiThread {
+            logView.text = logFile.readText()
+          }
         }
       }
     }
