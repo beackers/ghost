@@ -2,12 +2,15 @@ package com.beackers.ghostsms
 
 import android.os.Bundle
 import android.app.Activity
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import java.io.File
 import android.widget.Toast
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.FileObserver
@@ -23,6 +26,7 @@ private lateinit var observer : FileObserver
 private lateinit var logView : TextView
 private lateinit var logFile : File
 private lateinit var telephonyObserver : ContentObserver
+private lateinit var fileLogger : FileLogger
 
 class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +45,21 @@ class MainActivity : Activity() {
     setContentView(R.layout.activity_main)
 
     try {
+      logView = findViewById(R.id.logView)
+      logFile = File(filesDir, "ghostsms.log")
+      fileLogger = FileLogger(this)
+      logView.setOnLongClickListener {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("ghostsms-log", logView.text)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(this, "Copied log to clipboard", Toast.LENGTH_LONG).show()
+        true
+      }
+      findViewById<Button>(R.id.clearLogsButton).setOnClickListener {
+        logFile.writeText("")
+        logView.text = ""
+        Toast.makeText(this, "Log cleared", Toast.LENGTH_SHORT).show()
+      }
       ActivityCompat.requestPermissions(
         this,
         arrayOf(
@@ -55,10 +74,9 @@ class MainActivity : Activity() {
         Toast.LENGTH_LONG
       ).show()
 
-      logFile = File(filesDir, "ghostsms.log")
       if (logFile.exists()) {
         val text = logFile.readText()
-        findViewById<TextView>(R.id.logView).text = text
+        logView.text = text
       }
       checkDefaultSmsApp()
       startTelephonyObserver()
@@ -77,7 +95,7 @@ class MainActivity : Activity() {
     observer = object : FileObserver(logFile.absolutePath, MODIFY) {
       override fun onEvent(event: Int, path: String?) {
         runOnUiThread {
-          findViewById<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
+          logView.text = File(filesDir, "ghostsms.log").readText()
         }
       }
     }
@@ -91,8 +109,8 @@ class MainActivity : Activity() {
     val defaultSmsPackage = Telephony.Sms.getDefaultSmsPackage(this)
     if (defaultSmsPackage != packageName) {
       val message = "App is not the default SMS/MMS handler; MMS broadcasts are delivered only to the default app. Telephony DB polling may still reveal delivered messages.\n"
-      logFile.appendText(message)
-      findViewById<TextView>(R.id.logView).text = logFile.readText()
+      fileLogger.log(message.trim())
+      logView.text = logFile.readText()
       Toast.makeText(this, message.trim(), Toast.LENGTH_LONG).show()
       val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
       intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
@@ -103,8 +121,8 @@ class MainActivity : Activity() {
   private fun startTelephonyObserver() {
     if (checkSelfPermission(android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
       val message = "READ_SMS permission not granted; cannot observe SMS/MMS database changes.\n"
-      logFile.appendText(message)
-      findViewById<TextView>(R.id.logView).text = logFile.readText()
+      fileLogger.log(message.trim())
+      logView.text = logFile.readText()
       return
     }
     telephonyObserver = TelephonyChangeObserver(
@@ -154,7 +172,8 @@ class MainActivity : Activity() {
           val date = cursor.getLong(1)
           val address = cursor.getString(2)
           val body = cursor.getString(3)
-          logger.log("SMS DB id=$id date=$date address=$address body=$body")
+          val formattedDate = FileLogger.formatTime(date)
+          logger.log("SMS DB id=$id date=$formattedDate address=$address body=$body")
         }
       }
     }
@@ -171,7 +190,8 @@ class MainActivity : Activity() {
           val id = cursor.getLong(0)
           val date = cursor.getLong(1)
           val subject = cursor.getString(2)
-          logger.log("MMS DB id=$id date=$date subject=$subject")
+          val formattedDate = FileLogger.formatTime(date * 1000)
+          logger.log("MMS DB id=$id date=$formattedDate subject=$subject")
         }
       }
     }
