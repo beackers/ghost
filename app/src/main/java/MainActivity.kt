@@ -65,7 +65,7 @@ class MainActivity : Activity() {
     observer = object : FileObserver(logFile.absolutePath, MODIFY) {
       override fun onEvent(event: Int, path: String?) {
         runOnUiThread {
-          findViewbyId<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
+          findViewById<TextView>(R.id.logView).text = File(filesDir, "ghostsms.log").readText()
         }
       }
     }
