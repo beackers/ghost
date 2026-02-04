@@ -42,7 +42,7 @@ class WatchdogService : Service() {
     private fun loop() {
         handler.postDelayed({
             val events = logger.pollEvents()
-            for (e in events) fileLogger.log("STATUS QUIK $e")
+            for (e in events) fileLogger.log("QUIK $e")
             loop()
         }, 20_000)
     }
