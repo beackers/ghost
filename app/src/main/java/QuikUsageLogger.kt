@@ -8,6 +8,8 @@ import android.os.Process
 
 class QuikUsageLogger(private val ctx: Context) {
     private val QUIK_PKG = "dev.octoshrimpy.quik"
+    private val prefs = ctx.getSharedPreferences("quik_usage_logger", Context.MODE_PRIVATE)
+    private var lastProcessedTimestamp = prefs.getLong(KEY_LAST_PROCESSED, 0L)
 
     fun hasUsageAccess(): Boolean {
         val appOps = ctx.getSystemService(AppOpsManager::class.java)
@@ -22,17 +24,35 @@ class QuikUsageLogger(private val ctx: Context) {
     fun pollEvents(): List<String> {
         val usm = ctx.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val now = System.currentTimeMillis()
-        val events = usm.queryEvents(now - 600_000, now) // last 10 minutes
+        val startTime = when {
+            lastProcessedTimestamp in 1 until now -> lastProcessedTimestamp
+            else -> now - 600_000
+        }
+        val events = usm.queryEvents(startTime, now)
 
         val out = mutableListOf<String>()
         val event = UsageEvents.Event()
+        var maxTimestamp = lastProcessedTimestamp
 
         while (events.hasNextEvent()) {
             events.getNextEvent(event)
             if (event.packageName == QUIK_PKG) {
-                out.add("${event.timeStamp} QUIK event=${event.eventType}")
+                if (event.timeStamp > lastProcessedTimestamp) {
+                    out.add("${event.timeStamp} QUIK event=${event.eventType}")
+                }
+                if (event.timeStamp > maxTimestamp) {
+                    maxTimestamp = event.timeStamp
+                }
             }
         }
+        if (maxTimestamp > lastProcessedTimestamp) {
+            lastProcessedTimestamp = maxTimestamp
+            prefs.edit().putLong(KEY_LAST_PROCESSED, lastProcessedTimestamp).apply()
+        }
         return out
+    }
+
+    companion object {
+        private const val KEY_LAST_PROCESSED = "last_processed_timestamp"
     }
 }
