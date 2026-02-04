@@ -4,7 +4,7 @@ import android.content.Context
 import java.io.File
 
 class FileLogger(ctx: Context) {
-    private val file = File(ctx.filesDir, "ghostlog.txt")
+    private val file = File(ctx.filesDir, "ghostsms.log")
 
     fun log(s: String) {
         file.appendText("${System.currentTimeMillis()} $s\n")
