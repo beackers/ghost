@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Build
 import android.os.FileObserver
+import android.provider.Settings
 
 import com.beackers.ghostsms.crashcar.CrashCarActivity
 
@@ -18,6 +19,10 @@ private lateinit var logView : TextView
 private lateinit var logFile : File
 
 class MainActivity : Activity() {
+  companion object {
+    const val EXTRA_OPEN_USAGE_SETTINGS = "com.beackers.ghostsms.OPEN_USAGE_SETTINGS"
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     Thread.setDefaultUncaughtExceptionHandler { thread, e ->
       val f = File(filesDir, "crash.txt")
@@ -34,6 +39,9 @@ class MainActivity : Activity() {
     setContentView(R.layout.activity_main)
 
     try {
+      if (intent?.getBooleanExtra(EXTRA_OPEN_USAGE_SETTINGS, false) == true) {
+        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+      }
       ActivityCompat.requestPermissions(
         this,
         arrayOf(android.Manifest.permission.RECEIVE_SMS),
